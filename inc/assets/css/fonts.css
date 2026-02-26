@@ -1,0 +1,181 @@
+/*****************************************************************************
+ * Noto Sans JP
+ ****************************************************************************/
+@font-face {
+    font-family: 'Noto Sans JP';
+    src: url('../fonts/noto-sans/NotoSansJP-Thin.ttf');
+    font-weight: 100;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Noto Sans JP';
+    src: url('../fonts/noto-sans/NotoSansJP-ExtraLight.ttf');
+    font-weight: 200;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Noto Sans JP';
+    src: url('../fonts/noto-sans/NotoSansJP-Light.ttf');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Noto Sans JP';
+    src: url('../fonts/noto-sans/NotoSansJP-Regular.ttf');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Noto Sans JP';
+    src: url('../fonts/noto-sans/NotoSansJP-Medium.ttf');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Noto Sans JP';
+    src: url('../fonts/noto-sans/NotoSansJP-SemiBold.ttf');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Noto Sans JP';
+    src: url('../fonts/noto-sans/NotoSansJP-Bold.ttf');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Noto Sans JP';
+    src: url('../fonts/noto-sans/NotoSansJP-ExtraBold.ttf');
+    font-weight: 800;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Noto Sans JP';
+    src: url('../fonts/noto-sans/NotoSansJP-Black.ttf');
+    font-weight: 900;
+    font-style: normal;
+}
+
+/*****************************************************************************
+ * Noto Sans KO
+ ****************************************************************************/
+@font-face {
+    font-family: 'Noto Sans KR';
+    src: url('../fonts/noto-sans/NotoSansKR-Thin.ttf');
+    font-weight: 100;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Noto Sans KR';
+    src: url('../fonts/noto-sans/NotoSansKR-ExtraLight.ttf');
+    font-weight: 200;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Noto Sans KR';
+    src: url('../fonts/noto-sans/NotoSansKR-Light.ttf');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Noto Sans KR';
+    src: url('../fonts/noto-sans/NotoSansKR-Regular.ttf');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Noto Sans KR';
+    src: url('../fonts/noto-sans/NotoSansKR-Medium.ttf');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Noto Sans KR';
+    src: url('../fonts/noto-sans/NotoSansKR-SemiBold.ttf');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Noto Sans KR';
+    src: url('../fonts/noto-sans/NotoSansKR-Bold.ttf');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Noto Sans KR';
+    src: url('../fonts/noto-sans/NotoSansKR-ExtraBold.ttf');
+    font-weight: 800;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Noto Sans KR';
+    src: url('../fonts/noto-sans/NotoSansKR-Black.ttf');
+    font-weight: 900;
+    font-style: normal;
+}
+
+/*****************************************************************************
+ * Shippori Mincho
+ ****************************************************************************/
+@font-face {
+    font-family: 'ShipporiMincho';
+    src: url('../fonts/shippori-mincho/ShipporiMincho-Regular.ttf');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'ShipporiMincho';
+    src: url('../fonts/shippori-mincho/ShipporiMincho-Medium.ttf');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'ShipporiMincho';
+    src: url('../fonts/shippori-mincho/ShipporiMincho-SemiBold.ttf');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'ShipporiMincho';
+    src: url('../fonts/shippori-mincho/ShipporiMincho-Bold.ttf');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'ShipporiMincho';
+    src: url('../fonts/shippori-mincho/ShipporiMincho-ExtraBold.ttf');
+    font-weight: 800;
+    font-style: normal;
+}
+
+.font-noto-ko {
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+.font-noto-jp {
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+.font-mincho {
+    font-family: 'ShipporiMincho', serif;
+}

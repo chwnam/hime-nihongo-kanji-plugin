@@ -9,12 +9,13 @@
       "HimeNihongo\\KanjiPlugin\\": "inc/"
     },
     "files": [
+      "inc/facades.php",
       "inc/functions.php"
     ]
   },
   "autoload-dev": {
     "psr-4": {
-      "HimeNihongo\\KanjiPlugin\\Tests": "tests/"
+      "HimeNihongo\\KanjiPlugin\\Tests\\": "tests/"
     }
   },
   "authors": [
@@ -25,11 +26,14 @@
     }
   ],
   "require": {
-    "php": ">=8.3"
-  },
-  "require-dev": {
+    "php": ">=8.3",
+    "bojaghi/continy": "^1.2",
+    "bojaghi/custom-tables": "^1.0",
+    "bojaghi/admin-menus": "^1.0",
+    "bojaghi/template": "^1.0",
+    "bojaghi/admin-ajax": "^1.0",
+    "bojaghi/clean-pages": "^1.1"
   },
   "scripts": {
-  },
-  "version": "1.0.0"
+  }
 }
