@@ -14,7 +14,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "HimeNihongo\\KanjiPlugin\\Tests": "tests/"
+      "HimeNihongo\\KanjiPlugin\\Tests\\": "tests/"
     }
   },
   "authors": [
@@ -30,6 +30,5 @@
   "require-dev": {
   },
   "scripts": {
-  },
-  "version": "1.0.0"
+  }
 }
