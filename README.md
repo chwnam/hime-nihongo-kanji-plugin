@@ -1,3 +1,3 @@
-# Boilerplate
+# 히메 일본어 한자 플러그인
 
-Template for Bojaghi project.
+한자 쓰기 인쇄물 관리를 지원합니다.

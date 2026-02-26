@@ -1,25 +1,35 @@
 {
-    "name": "bojaghi/boilerplate",
-    "description": "Bojaghi boilerplate",
-    "homepage": "https://github.com/bojaghi/boilerplate",
-    "type": "library",
-    "license": "GPL-2.0-or-later",
-    "autoload": {
-        "psr-4": {
-        }
+  "name": "chwnam/hime-nihongo-kanji-plugin",
+  "description": "한자 쓰기 인쇄물 관리를 지원합니다.",
+  "homepage": "https://github.com/chwnam/hime-nihongo-kanji-plugin",
+  "type": "library",
+  "license": "GPL-2.0-or-later",
+  "autoload": {
+    "psr-4": {
+      "HimeNihongo\\KanjiPlugin\\": "inc/"
     },
-    "autoload-dev": {
-        "psr-4": {
-        }
-    },
-    "authors": [
-    ],
-    "require": {
-        "php": ">=8.0"
-    },
-    "require-dev": {
-    },
-    "scripts": {
-    },
-    "version": "1.0.7"
+    "files": [
+      "inc/functions.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "HimeNihongo\\KanjiPlugin\\Tests": "tests/"
+    }
+  },
+  "authors": [
+    {
+      "name": "changwoo",
+      "homepage": "https://blog.changwoo.pe.kr",
+      "email": "ep6tri@hotmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=8.3"
+  },
+  "require-dev": {
+  },
+  "scripts": {
+  },
+  "version": "1.0.0"
 }
