@@ -247,16 +247,16 @@
         },
         {
             "name": "bojaghi/custom-tables",
-            "version": "1.0.3",
+            "version": "1.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bojaghi/custom-tables.git",
-                "reference": "4e1a6c838e4e7b69865c4f0ad4257aa0e5c8fc69"
+                "reference": "693ffe4af08927a9edd3316b502f82032b9a8557"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bojaghi/custom-tables/zipball/4e1a6c838e4e7b69865c4f0ad4257aa0e5c8fc69",
-                "reference": "4e1a6c838e4e7b69865c4f0ad4257aa0e5c8fc69",
+                "url": "https://api.github.com/repos/bojaghi/custom-tables/zipball/693ffe4af08927a9edd3316b502f82032b9a8557",
+                "reference": "693ffe4af08927a9edd3316b502f82032b9a8557",
                 "shasum": ""
             },
             "require": {
@@ -289,9 +289,9 @@
             "homepage": "https://github.com/bojaghi/custom-tables",
             "support": {
                 "issues": "https://github.com/bojaghi/custom-tables/issues",
-                "source": "https://github.com/bojaghi/custom-tables/tree/1.0.3"
+                "source": "https://github.com/bojaghi/custom-tables/tree/1.0.5"
             },
-            "time": "2025-05-04T14:18:44+00:00"
+            "time": "2026-03-10T16:22:56+00:00"
         },
         {
             "name": "bojaghi/helper",

@@ -1,6 +1,7 @@
 <?php
 
 use Bojaghi\Continy\Continy;
+use HimeNihongo\KanjiPlugin\CLI;
 use HimeNihongo\KanjiPlugin\Modules;
 use HimeNihongo\KanjiPlugin\Supports;
 
@@ -73,6 +74,12 @@ return [
             'bojaghi/clean-pages',
             'bojaghi/custom-tables',
             'hnkp/activation',
+            function () {
+                if (defined('WP_CLI') && WP_CLI) {
+                    WP_CLI::add_command('hnkp/dic', CLI\DicCommand::class);
+                    WP_CLI::add_command('hnkp/hime', CLI\HimeCommand::class);
+                }
+            },
         ],
         'admin_print_styles' => [
             // Directly print style here
