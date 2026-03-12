@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+WP_CLI="/home/changwoo/bin/wp"
+KANJIDIC2_XML="/home/changwoo/Sync/kanjidic2.xml"
+JMDICT_E_XML="/home/changwoo/Sync/jmdict_e.xml"
+HANJA_CSV="/home/changwoo/Sync/hanja.csv"
+UNIHAN_READINGS="/home/changwoo/Sync/Unihan_Readings.txt"
+UNIHAN_VARIANTS="/home/changwoo/Sync/Unihan_Variants.txt"
+JLPT_KANJI="/home/changwoo/Sync/jlpt_kanji.txt"
+
+# Make sure the plugin is active.
+$WP_CLI plugin activate 'hime-nihongo-kanji-plugin'
+$WP_CLI hnkp/misc drop-tables --yes
+$WP_CLI hnkp/misc update-tables
+
+# Do dictionary import
+$WP_CLI hnkp/dic import-kanji "$KANJIDIC2_XML"
+$WP_CLI hnkp/dic import-tango "$JMDICT_E_XML"
+$WP_CLI hnkp/dic import-hanja "$HANJA_CSV"
+$WP_CLI hnkp/dic import-sinji "$UNIHAN_READINGS"
+$WP_CLI hnkp/dic import-map "$UNIHAN_VARIANTS" "$UNIHAN_READINGS"
+$WP_CLI hnkp/dic import-jlpt "$JLPT_KANJI"
+
+# Do hime migration
+$WP_CLI hnkp/hime migrate

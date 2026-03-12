@@ -5,6 +5,10 @@
 
 *.cache
 
+/scripts/*
+!/scripts/jlpt_kanji.txt
+!/scripts/*.dist
+
 /tests/wp-test-core
 /tests/wp-test-lib
 /vendor/

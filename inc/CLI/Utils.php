@@ -42,6 +42,7 @@ class Utils
 
     /**
      * @param array<string> $tables
+     *
      * @return array<string, int>
      */
     public static function getTablesRowCounts(array $tables): array
@@ -77,6 +78,27 @@ class Utils
         global $wpdb;
 
         return "{$wpdb->prefix}hnkp_hime_";
+    }
+
+
+    public static function getDicTables(): array
+    {
+        global $wpdb;
+
+        $tableName = $wpdb->esc_like(self::getDicPrefix()) . '%';
+        $query     = $wpdb->prepare("SHOW TABLES LIKE '$tableName%'");
+
+        return $wpdb->get_col($query);
+    }
+
+    public static function getHimeTables(): array
+    {
+        global $wpdb;
+
+        $tableName = $wpdb->esc_like(self::getHimePrefix()) . '%';
+        $query     = $wpdb->prepare("SHOW TABLES LIKE '$tableName%'");
+
+        return $wpdb->get_col($query);
     }
 
     public static function unicodeToStr(string $unicode): string

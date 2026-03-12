@@ -30,8 +30,8 @@ class HimeCommand
     {
         $this->checkDicTables();
 
-        // $this->migrate__himeChars();
-        // $this->migrate__himeWords();
+        $this->migrateHimeChars();
+        $this->migrateHimeWords();
         $this->doTheRest();
 
         $this->showHimeTableStatus();
@@ -43,7 +43,7 @@ class HimeCommand
      * @return void
      * @throws ExitException
      */
-    private function migrate__himeChars(): void
+    private function migrateHimeChars(): void
     {
         global $wpdb;
 
@@ -92,7 +92,7 @@ class HimeCommand
      * @return void
      * @throws ExitException
      */
-    private function migrate__himeWords(): void
+    private function migrateHimeWords(): void
     {
         global $wpdb;
 
@@ -123,7 +123,11 @@ class HimeCommand
             foreach ($results as $r) {
                 if (!isset($cached[$r->tango])) {
                     // Insert into hime_words with default values
-                    $query = $wpdb->prepare("INSERT INTO `$wordsTable` (word) VALUE (%s)", $r->tango);
+                    $query = $wpdb->prepare(
+                        "INSERT INTO `$wordsTable` (word, word_len) VALUE (%s, %d)",
+                        $r->tango,
+                        mb_strlen($r->tango, 'UTF-8'),
+                    );
                     $wpdb->query($query);
                     if ($wpdb->last_error) {
                         WP_CLI::error($wpdb->last_error);
@@ -362,17 +366,7 @@ class HimeCommand
      */
     private function checkDicTables(): void
     {
-        global $wpdb;
-
-        $tables = [
-            $wpdb->prefix . 'hnkp_dic_hanja',
-            $wpdb->prefix . 'hnkp_dic_jlpt',
-            $wpdb->prefix . 'hnkp_dic_kanji',
-            $wpdb->prefix . 'hnkp_dic_map',
-            $wpdb->prefix . 'hnkp_dic_sinji',
-            $wpdb->prefix . 'hnkp_dic_tango',
-        ];
-
+        $tables = Utils::getDicTables();
         $counts = Utils::getTablesRowCounts($tables);
 
         if (count($counts) != count($tables)) {
@@ -392,15 +386,7 @@ class HimeCommand
      */
     private function showHimeTableStatus(): void
     {
-        global $wpdb;
-
-        $tables = [
-            $wpdb->prefix . 'hnkp_hime_chars',
-            $wpdb->prefix . 'hnkp_hime_words',
-            $wpdb->prefix . 'hnkp_hime_word_details',
-            $wpdb->prefix . 'hnkp_hime_char_word_rels',
-        ];
-
+        $tables = Utils::getHimeTables();
         $counts = Utils::getTablesRowCounts($tables);
 
         if (count($counts) != count($tables)) {

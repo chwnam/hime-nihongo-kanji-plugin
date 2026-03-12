@@ -184,6 +184,7 @@ return [
         'field'         => [
             "id int(10) unsigned NOT NULL AUTO_INCREMENT",
             "word varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '단어.'",
+            "word_len tinyint(10) unsigned NOT NULL COMMENT '단어 길이.'",
             "hi_jlpt tinyint(10) unsigned NOT NULL DEFAULT '0' COMMENT '단어 내 한자 중 가장 높은 JLPT 급수. 0은 등급 외.'",
             "hi_jlpt_pos tinyint(10) NOT NULL DEFAULT '-1' COMMENT '해당 한자가 나온 위치. 음수는 유효한 갑 없음.'",
             "lo_jlpt tinyint(10) unsigned NOT NULL DEFAULT '0' COMMENT '단어 내 한자 중 가장 낮은 JLPT 급수. 0은 등급 외.'",
@@ -196,6 +197,7 @@ return [
         'index'         => [
             'PRIMARY KEY  (id)',
             'UNIQUE KEY uni_word (word)',
+            'KEY idx_word_len (word_len)',
         ],
         'engine'        => 'InnoDB',
         'charset'       => '',

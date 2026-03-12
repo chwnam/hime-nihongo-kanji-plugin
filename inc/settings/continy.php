@@ -78,6 +78,7 @@ return [
                 if (defined('WP_CLI') && WP_CLI) {
                     WP_CLI::add_command('hnkp/dic', CLI\DicCommand::class);
                     WP_CLI::add_command('hnkp/hime', CLI\HimeCommand::class);
+                    WP_CLI::add_command('hnkp/misc', CLI\MiscCommand::class);
                 }
             },
         ],
