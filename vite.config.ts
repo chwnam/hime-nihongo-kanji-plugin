@@ -13,8 +13,10 @@ export default defineConfig({
         modulePreload: {
             polyfill: true,
         },
-        rollupOptions: {
-            input: [],
+        rolldownOptions: {
+            input: [
+                './src/hello.ts',
+            ],
         },
     },
     publicDir: false,

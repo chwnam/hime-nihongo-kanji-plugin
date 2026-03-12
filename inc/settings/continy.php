@@ -39,6 +39,7 @@ return [
         'bojaghi/clean-pages'   => Bojaghi\CleanPages\CleanPages::class,
         'bojaghi/custom-tables' => Bojaghi\CustomTables\CustomTables::class,
         'bojaghi/template'      => Bojaghi\Template\Template::class,
+        'bojaghi/vite-scripts'  => Bojaghi\ViteScripts\ViteScript::class,
         //
         // Modules
         'hnkp/activation'       => Modules\ActivationDeactivation::class,
@@ -62,6 +63,7 @@ return [
         'bojaghi/clean-pages'   => HNKP_SETTINGS . '/clean-pages.php',
         'bojaghi/custom-tables' => [HNKP_SETTINGS . '/custom-tables.php', HNKP_SETTINGS . '/custom-tables-schemas.php'],
         'bojaghi/template'      => HNKP_SETTINGS . '/template.php',
+        'bojaghi/vite-scripts'   => HNKP_SETTINGS . '/vite-scripts.php',
     ],
 
     /**

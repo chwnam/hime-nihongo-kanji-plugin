@@ -3,6 +3,8 @@
 namespace HimeNihongo\KanjiPlugin\Supports;
 
 use Bojaghi\Contract\Support;
+use Bojaghi\ViteScripts\MountNode;
+use Bojaghi\ViteScripts\ViteScript;
 use HimeNihongo\KanjiPlugin\Objects\Kanji_Compat;
 use HimeNihongo\KanjiPlugin\Objects\KanjiRei_Compat;
 
@@ -38,6 +40,24 @@ class KanjiSheetsSupport implements Support
     }
 
     public function body(string $name): void
+    {
+        if ('kanji' !== $name) {
+            return;
+        }
+
+        /** @var ViteScript $vite */
+        $vs = hnkp_get('bojaghi/vite-scripts');
+        $vs
+            ->add('hello', 'src/hello.tsx')
+            ->vars('helloScript', ['name' => '히메'])
+        ;
+
+        MountNode::render(
+            ['id' => 'hello-script-root'],
+        );
+    }
+
+    public function legacy_body(string $name): void
     {
         global $wpdb;
 
