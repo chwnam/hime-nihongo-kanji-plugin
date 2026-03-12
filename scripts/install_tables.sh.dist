@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-WP_CLI="/home/changwoo/bin/wp"
-KANJIDIC2_XML="/home/changwoo/Sync/kanjidic2.xml"
-JMDICT_E_XML="/home/changwoo/Sync/jmdict_e.xml"
-HANJA_CSV="/home/changwoo/Sync/hanja.csv"
-UNIHAN_READINGS="/home/changwoo/Sync/Unihan_Readings.txt"
-UNIHAN_VARIANTS="/home/changwoo/Sync/Unihan_Variants.txt"
-JLPT_KANJI="/home/changwoo/Sync/jlpt_kanji.txt"
+WP_CLI="/path/to/wp"
+KANJIDIC2_XML="/path/to/kanjidic2.xml"
+JMDICT_E_XML="/path/to/JMdict_e.xml"
+HANJA_CSV="/path/to/hanja.csv"
+UNIHAN_READINGS="/path/to/Unihan_Readings.txt"
+UNIHAN_VARIANTS="/path/to/Unihan_Variants.txt"
+JLPT_KANJI="/path/to/jlpt_kanji.txt"
 
 # Make sure the plugin is active.
 $WP_CLI plugin activate 'hime-nihongo-kanji-plugin'
