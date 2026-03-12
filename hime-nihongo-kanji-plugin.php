@@ -3,7 +3,7 @@
  * Plugin Name:       히메 일본어 한자 플러그인
  * Description:       한자 쓰기 인쇄물 관리를 지원합니다.
  * Plugin URI:        https://github.com/chwnam/hime-nihongo-kanji-plugin
- * Version::          0.2.0
+ * Version::          0.3.0
  * Author:            남창우
  * Author URI:        https://blog.changwoo.pe.kr
  * Requires PHP:      8.3
@@ -17,7 +17,9 @@ if (!defined('ABSPATH')) {
 }
 
 const HNKP_MAIN    = __FILE__;
-const HNKP_VERSION = '0.2.0';
+const HNKP_VERSION = '0.3.0';
+const HNKP_DB_VERSION_NAME = 'hnkp_db_version';
+const HNKP_DB_VERSION = '0.3.0';
 
 define('HNKP_SETTINGS', dirname(HNKP_MAIN) . '/inc/settings');
 
