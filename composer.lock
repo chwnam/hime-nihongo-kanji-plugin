@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c16406bc905877d187124ae0015cf5c2",
+    "content-hash": "81bed8028dde6c8bb4c38f1b1268b96f",
     "packages": [
         {
             "name": "bojaghi/admin-ajax",
@@ -441,7 +441,95 @@
             "time": "2021-11-05T16:47:00+00:00"
         }
     ],
-    "packages-dev": [],
+    "packages-dev": [
+        {
+            "name": "bojaghi/fields-render",
+            "version": "1.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bojaghi/fields-render.git",
+                "reference": "fea34acfe574f13fc1dd10aab67e0bbd2c7cdda8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bojaghi/fields-render/zipball/fea34acfe574f13fc1dd10aab67e0bbd2c7cdda8",
+                "reference": "fea34acfe574f13fc1dd10aab67e0bbd2c7cdda8",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.0"
+            },
+            "require-dev": {
+                "bojaghi/wp-tests": "^1.0",
+                "phpunit/phpunit": "^9",
+                "yoast/phpunit-polyfills": "^3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Bojaghi\\FieldsRender\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "changwoo",
+                    "email": "ep6tri@hotmail.com"
+                }
+            ],
+            "description": "HTML widget helper for PHP server-side ",
+            "homepage": "https://github.com/bojaghi/fields-render",
+            "support": {
+                "issues": "https://github.com/bojaghi/fields-render/issues",
+                "source": "https://github.com/bojaghi/fields-render/tree/1.0.7"
+            },
+            "time": "2025-07-11T00:45:04+00:00"
+        },
+        {
+            "name": "bojaghi/vite-scripts",
+            "version": "1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bojaghi/vite-scripts.git",
+                "reference": "12ec422a7bc560072150f0d6281b630bf61e164c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bojaghi/vite-scripts/zipball/12ec422a7bc560072150f0d6281b630bf61e164c",
+                "reference": "12ec422a7bc560072150f0d6281b630bf61e164c",
+                "shasum": ""
+            },
+            "require": {
+                "bojaghi/fields-render": "^1.0",
+                "bojaghi/helper": "^1.1",
+                "php": ">=8.0"
+            },
+            "require-dev": {
+                "bojaghi/wp-tests": "^1.0",
+                "phpunit/phpunit": "^9",
+                "yoast/phpunit-polyfills": "^3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Bojaghi\\ViteScripts\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "homepage": "https://github.com/bojaghi/vite-scripts",
+            "support": {
+                "issues": "https://github.com/bojaghi/vite-scripts/issues",
+                "source": "https://github.com/bojaghi/vite-scripts/tree/1.2.0"
+            },
+            "time": "2025-05-20T22:44:31+00:00"
+        }
+    ],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {},
@@ -451,5 +539,5 @@
         "php": ">=8.3"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }

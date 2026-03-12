@@ -2,7 +2,7 @@
   "name": "chwnam/hime-nihongo-kanji-plugin",
   "description": "한자 쓰기 인쇄물 관리를 지원합니다.",
   "homepage": "https://github.com/chwnam/hime-nihongo-kanji-plugin",
-  "type": "library",
+  "type": "wordpress-plugin",
   "license": "GPL-2.0-or-later",
   "autoload": {
     "psr-4": {
@@ -33,6 +33,9 @@
     "bojaghi/template": "^1.0",
     "bojaghi/admin-ajax": "^1.0",
     "bojaghi/clean-pages": "^1.1"
+  },
+  "require-dev": {
+    "bojaghi/vite-scripts": "^1.2"
   },
   "scripts": {
   }
