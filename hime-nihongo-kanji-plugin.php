@@ -19,7 +19,7 @@ if (!defined('ABSPATH')) {
 const HNKP_MAIN    = __FILE__;
 const HNKP_VERSION = '0.3.0-dev';
 const HNKP_DB_VERSION_NAME = 'hnkp_db_version';
-const HNKP_DB_VERSION = '0.2.0';
+const HNKP_DB_VERSION = '0.2.1';
 
 define('HNKP_SETTINGS', dirname(HNKP_MAIN) . '/inc/settings');
 

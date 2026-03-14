@@ -252,4 +252,33 @@ return [
 
     // 히베 버전 테이블 끝 ----
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // 카스미 CSV 의미 마이그레이션 임시 테이블 ----
+    //
+    // 단어 테이블
+    [
+        'table_name'    => "{$wpdb->prefix}hnkp_kasumi_words",
+        'table_comment' => '카스미 한자 교실 N3, N4, N5 한자 예제 단어 임시 테이블. N5부터 N4, N3 순으로 입력. 부정화한 자료 포함 가능성 있음',
+        'field'         => [
+            "id int(10) unsigned NOT NULL AUTO_INCREMENT",
+            "jlpt tinyint(1) unsigned NOT NULL COMMENT '단어 JLPT 레벨'",
+            "entry int(10) unsigned NOT NULL COMMENT '해당 레벨에서 등록된 엔트리 번호'",
+            "word varchar(50) NOT NULL COMMENT '단어'",
+            "yomikata varchar(100) NOT NULL COMMENT '단어 읽기'",
+            "meaning varchar(100) NOT NULL COMMENT '단어 의미'",
+        ],
+        'index'         => [
+            'PRIMARY KEY  (id)',
+            'KEY idx_jlpt_entry (jlpt, entry)',
+            'UNIQUE KEy uni_word (word, yomikata)',
+        ],
+        'engine'        => 'InnoDB',
+        'charset'       => '',
+        'collate'       => '',
+    ],
+
+    // 카스미 CSV 의미 마이그레이션 임시 테이블 끝 ----
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 ];
