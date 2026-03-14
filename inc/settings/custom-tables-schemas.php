@@ -58,11 +58,11 @@ return [
         'table_name'    => "{$wpdb->prefix}hnkp_dic_tango",
         'table_comment' => '중간 단계 사전의 단어 목록. JMDict_e.xml 파싱 결과.',
         'field'         => [
-            "id int(10) unsigned NOT NULL",
-            "tango varchar(50) NOT NULL COMMENT '単語, 단어.'",
-            "tango_info text NOT NULL COMMENT 'ke_inf 엘리먼트 정보를 콤마(,)로 나열'",
-            "yomikata varchar(255) NOT NULL COMMENT '読み方, 읽기 표기. \"히라가나(중요도), 히라가나 (중요도), ...\" 식으로 나열한다. priority가 없다면 괄호는 생략 가능.'",
-            "sense text NOT NULL COMMENT 'sense 엘리먼트의 field, pos, misc, gloss 정보를 JSON으로 기록'",
+            "id int(10) unsigned NOT NULL  COMMENT '사전에 등재된 seq 번호'",
+            "tango varchar(50) NOT NULL COMMENT '대표 단어'",
+            "k_ele json NOT NULL COMMENT '단어 정보'",
+            "r_ele json NOT NULL COMMENT '읽기 정보'",
+            "sense json NOT NULL COMMENT 'sense 엘리먼트의 정보를 JSON으로 기록'",
         ],
         'index'         => [
             'PRIMARY KEY  (id)',

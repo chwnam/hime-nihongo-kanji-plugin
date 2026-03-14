@@ -203,6 +203,15 @@ class DicCommand
                     $yomikata = [];
                     $senses   = [];
 
+                    $k_ele = [];
+                    foreach ($node->k_ele as $k_ele) {
+                        $tango = (string)$k_ele->keb;
+                        $info  = array_map(fn($i) => trim($i, '&;'), (array)($k_ele->ke_inf ?? []));
+
+                        $k_ele
+                    }
+
+
                     foreach ($node->r_ele as $r_ele) {
                         $yomi   = (string)$r_ele->reb;
                         $priBuf = [];
