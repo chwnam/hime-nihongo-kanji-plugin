@@ -49,7 +49,6 @@ class DicCommand
             WP_CLI::error("File not found, or unreadable: $path");
         }
 
-
         $rows   = [];
         $norm   = [];
         $reader = new XMLReader();
@@ -64,7 +63,6 @@ class DicCommand
                 }
 
                 $kanji        = '';
-                $jlpt         = '0';
                 $on_yomi      = '';
                 $kun_yomi     = '';
                 $radical      = 0;
