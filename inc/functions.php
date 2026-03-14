@@ -2,6 +2,10 @@
 
 namespace HemeNihongo\KanjiPlugin;
 
+use Exception;
+use HimeNihongo\KanjiPlugin\CLI;
+use WP_CLI;
+
 function assets_url(string $path): string
 {
     $path = ltrim($path, '/\\');
@@ -23,4 +27,17 @@ function hira_to_kata(string $string): string
     }
 
     return implode('、', $output);
+}
+
+
+/**
+ * @throws Exception
+ */
+function addCliCommands(): void
+{
+    if (defined('WP_CLI') && WP_CLI) {
+        WP_CLI::add_command('hnkp/dic', CLI\DicCommand::class);
+        WP_CLI::add_command('hnkp/hime', CLI\HimeCommand::class);
+        WP_CLI::add_command('hnkp/misc', CLI\MiscCommand::class);
+    }
 }

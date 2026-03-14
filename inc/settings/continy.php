@@ -1,9 +1,9 @@
 <?php
 
 use Bojaghi\Continy\Continy;
-use HimeNihongo\KanjiPlugin\CLI;
 use HimeNihongo\KanjiPlugin\Modules;
 use HimeNihongo\KanjiPlugin\Supports;
+use function HemeNihongo\KanjiPlugin\addCliCommands;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -63,7 +63,7 @@ return [
         'bojaghi/clean-pages'   => HNKP_SETTINGS . '/clean-pages.php',
         'bojaghi/custom-tables' => [HNKP_SETTINGS . '/custom-tables.php', HNKP_SETTINGS . '/custom-tables-schemas.php'],
         'bojaghi/template'      => HNKP_SETTINGS . '/template.php',
-        'bojaghi/vite-scripts'   => HNKP_SETTINGS . '/vite-scripts.php',
+        'bojaghi/vite-scripts'  => HNKP_SETTINGS . '/vite-scripts.php',
     ],
 
     /**
@@ -76,13 +76,7 @@ return [
             'bojaghi/clean-pages',
             'bojaghi/custom-tables',
             'hnkp/activation',
-            function () {
-                if (defined('WP_CLI') && WP_CLI) {
-                    WP_CLI::add_command('hnkp/dic', CLI\DicCommand::class);
-                    WP_CLI::add_command('hnkp/hime', CLI\HimeCommand::class);
-                    WP_CLI::add_command('hnkp/misc', CLI\MiscCommand::class);
-                }
-            },
+            function () { addCliCommands(); },
         ],
         'admin_print_styles' => [
             // Directly print style here
