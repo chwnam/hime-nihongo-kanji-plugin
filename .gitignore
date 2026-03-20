@@ -7,6 +7,7 @@
 
 /scripts/*
 !/scripts/jlpt_kanji.txt
+!/scripts/kasumi_words_typos.csv
 !/scripts/*.dist
 
 /tests/wp-test-core
