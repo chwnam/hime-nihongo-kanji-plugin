@@ -581,6 +581,65 @@ class CliCommand
     }
 
     /**
+     * 카스티 테이블에서 히메 테이블로 데이터를 이전합니다.
+     *
+     * 히메 테이블에 자료가 이미 있을 경우, 데이터 오염이 발생할 수 있습니다.
+     * --truncate 옵션을 사용하면 테이블을 완전히 비우고 작업을 하므로, 사용에 주의하시기 바랍니다.
+     *
+     * ## EXAMPLES
+     *
+     *     wp hnkp migrate-kasumi-to-hime
+     *
+     * ## OPTIONS
+     *
+     * [--truncate]
+     * : hime_words, hime_char_word_rels 테이블을 truncate 합니다,
+     *
+     * [--yes]
+     * :실행 전에 확인하지 않습니다.
+     *
+     * @subcommand migrate-kasumi-to-hime
+     * @when       after_wp_load
+     *
+     * @param array $args
+     * @param array $assoc_args
+     *
+     * @return void
+     * @throws ExitException
+     */
+    public function migrateKasumiToHime(array $args, array $assoc_args): void
+    {
+        if (isset($assoc_args['truncate'])) {
+            WP_CLI::confirm(
+                sprintf(
+                    '주의! %s, %s 테이블을 비우고 시작합니다! 진행하시겠습니까?',
+                    HimeTables::getTableWords(),
+                    HimeTables::getTableCharWordRels(),
+                ),
+                $assoc_args,
+            );
+        } else {
+            WP_CLI::confirm(
+                sprintf(
+                    '주의! %s, 테이블에 데이터 오염이 발생할 수 있습니다.! 진행하시겠습니까?',
+                    HimeTables::getTableWords(),
+                ),
+                $assoc_args,
+            );
+        }
+
+        try {
+            /** @var HimeMigrateSupport $support */
+            $support = hnkp_get(HimeMigrateSupport::class);
+            $support->migrateKasumiToHime();
+        } catch (Exception $e) {
+            WP_CLI::error($e->getMessage());
+        }
+
+        WP_CLI::success('모두 성공적으로 이전했습니다.');
+    }
+
+    /**
      * 데이터베이스 변경을 바로 적용합니다.
      *
      * 게발시 자잘한 테이블 변경 사항의 바로 반영합니다.
