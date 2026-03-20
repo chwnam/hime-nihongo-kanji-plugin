@@ -13,6 +13,7 @@ use HimeNihongo\KanjiPlugin\Supports\DB\KasumiImportSupport;
 use HimeNihongo\KanjiPlugin\Supports\DB\KasumiTables;
 use HimeNihongo\KanjiPlugin\Supports\DB\MidImportSupport;
 use HimeNihongo\KanjiPlugin\Supports\DB\MidTables;
+use HimeNihongo\KanjiPlugin\Supports\DB\Utils;
 use WP_CLI;
 use WP_CLI\ExitException;
 
@@ -256,9 +257,11 @@ class CliCommand
      * JLPT 등급별 한자 정보를 가져옵니다.
      *
      * 입력할 파일은 다음처럼 구성되어 있습니다.
-     * 첫줄은 'N5'라고 적고,  다음줄에 공백으로 분리된 한자 목록이 나옵니다. 목록이 끝난 후 빈 줄 하나가 나옵니다.
-     * 빈 줄 후 'N4'라고 적고 같은 방법으로 한 줄에 모든 한자 목록이 나열합니다. 목록이 끝난 후 빈 줄 하나를 추가합니다.
-     * 이후 N1까지 동일합니다.
+     * 첫줄은 'N1, 1137'이라고 적혀 있습니다. 그리고 다음 줄에 한자 10개씩 나열됩니다.
+     * 첫줄의 N1은 해당 한자의 추정 JLPT 들급이며, 숫자는 뒤이어 나올 한자의 총 글자수입니다.
+     *
+     * 목록이 끝난 후 빈 줄 하나가 나옵니다.
+     * 그후 'N2'부터 'N5'까지 같은 방법으로 한자를 나열합니다.
      *
      * 이전 테이블의 내용을 모두 지우고 시작합니다.
      *
@@ -267,13 +270,12 @@ class CliCommand
      *     wp hnkp jlpt-import jlpt-kanji.txt
      *
      *     (Sample of file)
-     *     N5
-     *     一 七 万 三 上 下 ....
+     *     N1, 1137
+     *     結張保撃証士第郎応護
+     *     ...
+     *     塡楷頒頰憬諧𠮟
      *
-     *     N4
-     *     不 世 主 事 京 仕 代 ...
-     *
-     *     N3
+     *     N2, 381
      *     ...
      *
      * ## OPTIONS
@@ -320,6 +322,114 @@ class CliCommand
         }
 
         WP_CLI::success('모두 성공적으로 가져왔습니다.');
+    }
+
+    /**
+     * 입력 JLPT 레벨별 한자 목록의 중복을 제거합니다.
+     *
+     * 인터넷에서 수집한 한자 목록에는 중복이 있을 수 있습니다.
+     * 데이터 입력의 신뢰성을 높이기 위해 중복된 한자는 제거하는 작업을 합니다.
+     *
+     * 중복된 한자는 마지막에 중복 갯수와 같이 출력됩니다.
+     * 중복이 없으면 출력 파일이 생성되지 않습니다.
+     *
+     * ## EXAMPLES
+     *
+     *     wp hnkp filter-jlpt jlpt-kanji.txt jlpt-kanji-purified.txt
+     *
+     * ## OPTIONS
+     *
+     * <input>
+     * : 입력 파일 경로
+     *
+     * <output>
+     * : 출력 파일 경로. 중복이 없을 경우 생성되지 않습니다.
+     *
+     * @subcommand filter-jlpt
+     * @when       after_wp_load
+     *
+     * @param array $args
+     *
+     * @return void
+     * @throws ExitException
+     */
+    public function filterJlpt(array $args): void
+    {
+        [$input, $output] = $args;
+
+        $level = 0;
+        $cache = [];
+        $chars = [
+            [],
+            [],
+            [],
+            [],
+            [],
+        ];
+
+        $in = fopen($input, 'r');
+        if (!$in) {
+            WP_CLI::error("Failed to open file: $input");
+        }
+
+        while (false !== ($line = fgets($in, 5000))) {
+            $line = trim($line);
+
+            if (empty($line)) {
+                continue;
+            }
+
+            if (preg_match('/^N([1-5]), (\d+)$/i', $line, $matches)) {
+                $level = (int)$matches[1];
+                continue;
+            }
+
+            $kanji = array_map(fn($k) => Utils::normalize(trim($k)), array_filter(mb_str_split($line)));
+
+            if ($level && $kanji) {
+                foreach ($kanji as $k) {
+                    if (!isset($cache[$k])) {
+                        $cache[$k]           = 1;
+                        $chars[$level - 1][] = $k;
+                    } else {
+                        $cache[$k] += 1;
+                    }
+                }
+            }
+        }
+
+        fclose($in);
+
+        $filterRequired = false;
+
+        foreach ($cache as $k => $c) {
+            if ($c > 1) {
+                WP_CLI::log("$k: $c");
+                $filterRequired = true;
+            }
+        }
+
+        if ($filterRequired) {
+            $out = fopen($output, 'w');
+            if (!$out) {
+                WP_CLI::error("Failed to open file: $output");
+            }
+
+            foreach ($chars as $level => $kanji) {
+                $grade = $level + 1;
+                fwrite($out, "N{$grade}, " . count($kanji) . "\n");
+                foreach (array_chunk($kanji, 10) as $chunk) {
+                    fwrite($out, implode('', $chunk) . "\n");
+                }
+                fwrite($out, "\n");
+            }
+
+            fclose($out);
+        } else {
+            WP_CLI::log('No duplicate found!');
+        }
+
+        WP_CLI::success('Filter complete.');
     }
 
     /**

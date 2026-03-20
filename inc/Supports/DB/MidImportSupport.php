@@ -296,6 +296,8 @@ class MidImportSupport implements Support
 
         $rows  = [];
         $level = 0;
+        $accum = 0;
+        $total = 0;
 
         while (false !== ($line = fgets($fp, 5000))) {
             $line = trim($line);
@@ -304,18 +306,24 @@ class MidImportSupport implements Support
                 continue;
             }
 
-            if (preg_match('/^N([1-5])$/', $line, $matches)) {
+            if (preg_match('/^N([1-5]), (\d+)$/i', $line, $matches)) {
+                if ($accum !== $total) {
+                    throw new Exception("Invalid accumulation: $accum");
+                }
+
                 $level = (int)$matches[1];
+                $total = (int)$matches[2];
+                $accum = 0;
                 continue;
             }
 
-            $kanji = array_map(fn($k) => Utils::normalize(trim($k)), array_filter(explode(' ', $line)));
+            $kanji = array_map(fn($k) => Utils::normalize(trim($k)), array_filter(mb_str_split($line)));
 
             if ($level && $kanji) {
                 foreach ($kanji as $k) {
                     $rows[] = $wpdb->prepare('(%d,%s)', $level, $k);
                 }
-                $level = 0;
+                $accum += count($kanji);
             }
         }
 
