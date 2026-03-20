@@ -35,7 +35,7 @@
   [data/Unihan_Readings.txt](https://raw.githubusercontent.com/labocho/unihan_utils/refs/heads/master/data/Unihan_Readings.txt),
   [data/Unihan_Variants.txt](https://raw.githubusercontent.com/labocho/unihan_utils/refs/heads/master/data/Unihan_Variants.txt)
   두 파일을 받습니다. 각 경로를 `UNIHAN_READINGS`, `UNIHAN_VARIANTS`로 설정합니다.
-- `JLPT_KANJI`는 임의로 생성한 JLPT N1~N5 한자 목록 파일의 경로입니다. 이 파일은 `scripts/jlpt_kanji.txt`를 사용하세요.
+- `JLPT_KANJI`는 임의로 생성한 JLPT N1~N5 한자 목록 파일의 경로입니다. 이 파일은 `data/jlpt_kanji.txt`를 사용하세요.
   이 파일의 경로를 `JLPT_KANJI`로 설정합니다.
 - `KASUMI_CSV_PATH`는 이전 템플릿 작업 결과물의 CSV 파일이 위치한 **디렉토리**의 위치를 지정합니다.
   한자와 한자를 활용한 단어가 하나의 CSV로 만든 파일입니다.

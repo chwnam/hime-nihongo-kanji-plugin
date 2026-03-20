@@ -16,7 +16,7 @@ WHERE NOT EXISTS (SELECT 1
                     AND r_ele.reb = words.yomikata);
 ```
 
-이 결과는 `docs/kasumi_not_found.csv`에 기록했습니다.
+이 결과는 `data/kasumi_not_found.csv`에 기록했습니다.
 총 54항목이며, 이 항목만을 대상으로 조사를 합니다.
 
 쿼리:
@@ -44,7 +44,7 @@ WHERE words.word IN (
 GROUP BY words.word
 ```
 
-이 결과는 `docs/kasumi_typos.csv`로도 저장하였습니다. `in_jmdict`필드가 Y인 경우는 사전에서 항목은 찾을 수 있으므로,
+이 결과는 `data/kasumi_typos.csv`로도 저장하였습니다. `in_jmdict`필드가 Y인 경우는 사전에서 항목은 찾을 수 있으므로,
 `yomikata` 필드에 오류가 있는 경우라고 예상할 수 있습니다.
 
 - 읽는 법에 오타가 있습니다.
@@ -76,7 +76,13 @@ GROUP BY word
 HAVING cnt > 1
 ```
 
-결과는 `docs/kasumi_dup.csv`로 저장하였습니다.
-
+결과는 `data/kasumi_dup.csv`로 저장하였습니다.
 
 ## 마이그레이션 계획
+
+1. `data/kasumi_types.csv` 파일을 참고하여 words, yomikata, meaning 을 교정합니다.
+2. 교정한 파일을 `data/kasumi_fix.csv`로 저장합니다.
+3. 교정된 `data/kasumi_fix.csv`를 우선적으로 hime_words에 삽입합니다.
+4. `data/kasumi_typos`에 있지 않다면 사전에서 찾은 단어이므로 hime_word에 삽입합니다.
+5. kasumi_words 테이블과 hime_words의 단어 매핑 테이블을 기록합니다.
+6. 매핑 테이블을 이용해 쓰기 내용을 마이그레이션합니다.
