@@ -20,8 +20,14 @@ WHERE NOT EXISTS (SELECT 1
 총 54항목이며, 이 항목만을 대상으로 조사를 합니다.
 
 쿼리:
+
 ```sql
-SELECT words.jlpt, words.entry, words.word, words.yomikata, words.meaning, IF (jmdict.word IS NULL, 'N', 'Y') AS in_jmdict
+SELECT words.jlpt,
+       words.entry,
+       words.word,
+       words.yomikata,
+       words.meaning,
+       IF(jmdict.word IS NULL, 'N', 'Y') AS in_jmdict
 FROM wp_hnkp_kasumi_words words
          LEFT JOIN (SELECT keb.word
                     FROM wp_hnkp_jmdict_entry AS entry
@@ -51,7 +57,6 @@ GROUP BY words.word
 - 임의의 표기를 포함시킨 단어일 수 있습니다.
 - 단어의 원형이 아닌, 활용형을 적은 것일 수 있습니다.
 
-
 ## 단어 중복 조사
 
 아래 SQL 쿼리를 사용하여 2번이상 활용된 단어를 추출합니다.
@@ -59,7 +64,7 @@ GROUP BY words.word
 
 ```sql
 SELECT word,
-       COUNT(word) as cnt,
+       COUNT(word)                            as cnt,
        IF(word IN ('何人', '同期生', '世界中', '勤務外', '前に', '左右', '東海岸', '西海岸', '南口', '天気予報',
                    '元気', '小学校', '校長', '身長', '多数决', '少年', '古本屋', '食事', '言語', '何が', '新宿駅',
                    '直射光', '代わりに', '側縁図', '20度', '同い', '文学', '大阪市', '市会議', '十万弱', '洋楽器',
@@ -72,3 +77,6 @@ HAVING cnt > 1
 ```
 
 결과는 `docs/kasumi_dup.csv`로 저장하였습니다.
+
+
+## 마이그레이션 계획
