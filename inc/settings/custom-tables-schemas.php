@@ -39,9 +39,9 @@ return [
             'field'         => [
                 "id int(10) unsigned NOT NULL AUTO_INCREMENT",
                 "entry int(10) unsigned NOT NULL COMMENT '해당 레벨에서 등록된 엔트리 번호'",
-                "kanji char(1) NOT NULL COMMENT '한자'",
-                "kun_yomi varchar(20) NOT NULL COMMENT '훈독 - 콤마(,) 여러 개 구분'",
-                "on_yomi varchar(20) NOT NULL COMMENT '음독 - 콤마(,) 여러 개 구분'",
+                "kanji char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '한자'",
+                "kun_yomi varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '훈독 - 콤마(,) 여러 개 구분'",
+                "on_yomi varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '음독 - 콤마(,) 여러 개 구분'",
                 "kun_ko varchar(10) NOT NULL COMMENT '한국어 훈 (대표)'",
                 "on_ko varchar(10) NOT NULL COMMENT '한국어 음 (대표)'",
                 "ko_extra varchar(25) NOT NULL COMMENT '한국어 음, 훈이 2개 이상인 경우 사용'",
@@ -66,8 +66,8 @@ return [
                 "id int(10) unsigned NOT NULL AUTO_INCREMENT",
                 "jlpt tinyint(1) unsigned NOT NULL COMMENT '단어 JLPT 레벨'",
                 "entry int(10) unsigned NOT NULL COMMENT '해당 레벨에서 등록된 엔트리 번호'",
-                "word varchar(50) NOT NULL COMMENT '단어'",
-                "yomikata varchar(100) NOT NULL COMMENT '단어 읽기'",
+                "word varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '단어'",
+                "yomikata varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '단어 읽기'",
                 "meaning varchar(100) NOT NULL COMMENT '단어 의미'",
             ],
             'index'         => [
