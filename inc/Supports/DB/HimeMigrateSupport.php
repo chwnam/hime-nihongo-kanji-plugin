@@ -26,12 +26,12 @@ class HimeMigrateSupport implements Support
     {
         global $wpdb;
 
-        $tableChars = HimeTables::getTableChars();
-        $tableKanji = MidTables::getTableKanji();
-        $tableJlpt  = MidTables::getTableJlpt();
-        $tableMap   = MidTables::getTableMap();
-        $tableHanja = MidTables::getTableHanja();
-        $tableJyouyou    = MidTables::getTableJyouyou();
+        $tableChars   = HimeTables::getTableChars();
+        $tableKanji   = MidTables::getTableKanji();
+        $tableJlpt    = MidTables::getTableJlpt();
+        $tableMap     = MidTables::getTableMap();
+        $tableHanja   = MidTables::getTableHanja();
+        $tableJyouyou = MidTables::getTableJyouyou();
 
         $query = "INSERT INTO `$tableChars` (\n" .
             "kanji, kun_yomi, on_yomi, radical, stroke_count, freq, jlpt, jyouyou, gakunen, ko_hanja, ko_on, ko_meaning, ko_level)\n" .
@@ -46,19 +46,22 @@ class HimeMigrateSupport implements Support
             "    jy.id AS jyouyou,\n" .
             "    jy.gakunen,\n" .
             "    MAX(CASE\n" .
-            "        WHEN h.hanja IS NULL THEN NULL\n" .
-            "        WHEN k.kanji = h.hanja THEN ''\n" .
-            "        ELSE h.hanja\n" .
+            "        WHEN COALESCE(h1.hanja, h2.hanja, h3.hanja) IS NULL THEN NULL\n" .
+            "        WHEN COALESCE(h1.hanja, h2.hanja, h3.hanja) = k.kanji THEN ''\n" .
+            "        ELSE COALESCE(h1.hanja, h2.hanja, h3.hanja)\n" .
             "    END) AS ko_hanja,\n" .
-            "    MAX(h.main_sound) AS ko_on,\n" .
-            "    MAX(h.meaning) AS ko_meaning,\n" .
-            "    MAX(h.level) AS ko_level\n" .
+            "    MAX(COALESCE(h1.main_sound, h2.main_sound, h3.main_sound)) AS ko_on,\n" .
+            "    MAX(COALESCE(h1.meaning, h2.meaning, h3.meaning)) AS ko_meaning,\n" .
+            "    MAX(COALESCE(h1.level, h2.level, h3.level)) AS ko_level\n" .
             "FROM `$tableKanji` k\n" .
             "LEFT JOIN `$tableJlpt` j ON j.kanji = k.kanji\n" .
             "LEFT JOIN `$tableJyouyou` jy ON jy.kanji = k.kanji\n" .
-            "LEFT JOIN `$tableMap` m ON m.k_in = k.kanji OR m.k_out = k.kanji\n" .
-            "LEFT JOIN `$tableHanja` h ON h.hanja = m.k_in OR h.hanja=m.k_out OR h.hanja = k.kanji\n" .
-            "GROUP BY k.kanji ORDER BY k.id";
+            "LEFT JOIN `$tableMap` m1 ON m1.k_in = k.kanji\n" .
+            "LEFT JOIN `$tableHanja` h1 ON h1.hanja = m1.k_out\n" .
+            "LEFT JOIN `$tableMap` m2 ON m2.k_out = k.kanji\n" .
+            "LEFT JOIN `$tableHanja` h2 ON h2.hanja = m2.k_in\n" .
+            "LEFT JOIN `$tableHanja` h3 ON h3.hanja = k.kanji\n" .
+            "GROUP BY k.id ORDER BY k.id";
         // echo $query;
         $wpdb->query($query);
         if ($wpdb->last_error) {
