@@ -169,6 +169,24 @@ return [
             'charset'       => '',
             'collate'       => '',
         ],
+        [
+            'table_name'    => "{$wpdb->prefix}hnkp_mid_jyouyou",
+            'table_comment' => '중간 단계 일본 상용 한자 목록',
+            'field'         => [
+                "id int(10) unsigned NOT NULL",
+                "kanji char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '상용한자'",
+                "kyuuji char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL COMMENT '구자체'",
+                "gakunen tinyint(1) unsigned NOT NULL COMMENT '1~6은 소학교 학년, 7은 중학교 이상'",
+            ],
+            'index'         => [
+                'PRIMARY KEY  (id)',
+                "KEY idx_kanji (kanji)",
+                "KEY idx_kyuuji (kyuuji)",
+            ],
+            'engine'        => 'InnoDB',
+            'charset'       => '',
+            'collate'       => '',
+        ],
     ],
     // 옥푠 중간 자료 테이블 끝 //
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -286,8 +304,10 @@ return [
                 "on_yomi varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '음독, 도텐(,)으로 구분.'",
                 "radical tinyint(10) unsigned NOT NULL COMMENT '강희자전 부수 코드. 공식: U+2F00 + (부수코드 - 1).'",
                 "stroke_count tinyint(10) unsigned NOT NULL COMMENT '신자체 기준 총횟수.'",
-                "freq smallint(10) unsigned NOT NULL DEFAULT 0  COMMENT'1~2500사이의 빈도수 랭킹, 0은 순위 외.'",
+                "freq smallint(10) unsigned NOT NULL DEFAULT 0  COMMENT '1~2500사이의 빈도수 랭킹, 0은 순위 외.'",
                 "jlpt tinyint(10) unsigned NOT NULL DEFAULT 0 COMMENT 'JLPT 등급, 등급오는 0.'",
+                "jyouyou smallint(10) unsigned NOT NULL DEFAULT 0 COMMENT '상용한자 번호, 0은 상용한자 아님.'",
+                "gakunen tinyint(1) unsigned NOT NULL COMMENT '상용한자를 배우는 소학교 학년. 7은 중학교 이상.'",
                 "ko_hanja char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '한국에서 사용하는 구체자.'",
                 "ko_on char(1) NULL DEFAULT NULL NULL COMMENT '한국어 대표 음.'",
                 "ko_meaning varchar(100) NULL DEFAULT NULL COMMENT '한국어 한자 훈과 음.'",
@@ -299,6 +319,7 @@ return [
                 'KEY idx_freq (freq)',
                 'KEY idx_jlpt_ko_on (jlpt, ko_on)',
                 'KEY idx_ko_on (ko_on)',
+                'KEY idx_jyouyou (jyouyou)',
             ],
             'engine'        => 'InnoDB', // Optional, defaults to 'InnoDB'.
             'charset'       => '',       // Optional, leave blank to use the default value of $wpdb.

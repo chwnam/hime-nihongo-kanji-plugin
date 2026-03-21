@@ -30,11 +30,11 @@ class HimeMigrateSupport implements Support
         $tableKanji = MidTables::getTableKanji();
         $tableJlpt  = MidTables::getTableJlpt();
         $tableMap   = MidTables::getTableMap();
-        $tableSinji = MidTables::getTableSinji();
         $tableHanja = MidTables::getTableHanja();
+        $tableJyouyou    = MidTables::getTableJyouyou();
 
         $query = "INSERT INTO `$tableChars` (\n" .
-            "kanji, kun_yomi, on_yomi, radical, stroke_count, freq, jlpt, ko_hanja, ko_on, ko_meaning, ko_level)\n" .
+            "kanji, kun_yomi, on_yomi, radical, stroke_count, freq, jlpt, jyouyou, gakunen, ko_hanja, ko_on, ko_meaning, ko_level)\n" .
             "SELECT\n" .
             "    k.kanji,\n" .
             "    k.kun_yomi,\n" .
@@ -43,6 +43,8 @@ class HimeMigrateSupport implements Support
             "    k.stroke_count,\n" .
             "    k.freq,\n" .
             "    COALESCE(j.level, 0) AS jlpt,\n" .
+            "    jy.id AS jyouyou,\n" .
+            "    jy.gakunen,\n" .
             "    MAX(CASE\n" .
             "        WHEN h.hanja IS NULL THEN NULL\n" .
             "        WHEN k.kanji = h.hanja THEN ''\n" .
@@ -53,11 +55,9 @@ class HimeMigrateSupport implements Support
             "    MAX(h.level) AS ko_level\n" .
             "FROM `$tableKanji` k\n" .
             "LEFT JOIN `$tableJlpt` j ON j.kanji = k.kanji\n" .
-            "LEFT JOIN `$tableMap` m1 ON m1.k_in = k.kanji AND m1.type IN ('tv', 'sev', 'zv')\n" .
-            "LEFT JOIN `$tableMap` m2 ON m2.k_out = k.kanji AND m2.type = 'siv'\n" .
-            "LEFT JOIN `$tableSinji` s1 ON s1.kanji = m1.k_out\n" .
-            "LEFT JOIN `$tableSinji` s2 ON s2.kanji = m2.k_out\n" .
-            "LEFT JOIN `$tableHanja` h ON h.hanja = (IF(k.kanji = h.hanja, k.kanji, COALESCE(m1.k_out, m2.k_in)))\n" .
+            "LEFT JOIN `$tableJyouyou` jy ON jy.kanji = k.kanji\n" .
+            "LEFT JOIN `$tableMap` m ON m.k_in = k.kanji OR m.k_out = k.kanji\n" .
+            "LEFT JOIN `$tableHanja` h ON h.hanja = m.k_in OR h.hanja=m.k_out OR h.hanja = k.kanji\n" .
             "GROUP BY k.kanji ORDER BY k.id";
         // echo $query;
         $wpdb->query($query);

@@ -325,6 +325,61 @@ class CliCommand
     }
 
     /**
+     * 상용한자 목록을 정보를 가져옵니다.
+     *
+     * 이전 테이블의 내용을 모두 지우고 시작합니다.
+     *
+     * ## EXAMPLES
+     *
+     *     wp hnkp jyouyou-import jyouyoukanji.csv
+     *
+     * ## OPTIONS
+     *
+     * <path>
+     * : 텍스트 파일의 경로
+     *
+     * [--yes]
+     * : 묻지 않습니다
+     *
+     * [--drop]
+     * : 테이블을 drop 시킨 후 다시 생성합니다.
+     *
+     * @param array $args
+     * @param array $assoc_args
+     *
+     * @return void
+     *
+     * @subcommand import-jyouyou
+     * @when       after_wp_load
+     * @throws ExitException
+     */
+    public function importJyouyou(array $args, array $assoc_args): void
+    {
+        if (isset($assoc_args['drop'])) {
+            WP_CLI::confirm('테이블을 삭제하고 시작하시겠습니까?', $assoc_args);
+            MidTables::dropSingleTable('jyouyou');
+        } else {
+            WP_CLI::confirm('테이블의 내용을 비우고 시작하시겠습니까?', $assoc_args);
+            MidTables::truncateSingleTable('jyouyou');
+        }
+
+        $path = $args[0];
+        if (!file_exists($path) || !is_readable($path)) {
+            WP_CLI::error("파일을 찾을 수 없거나, 일을 수 없습니다: $path");
+        }
+
+        try {
+            /** @var MidImportSupport $support */
+            $support = hnkp_get(MidImportSupport::class);
+            $support->importJyouyou($path);
+        } catch (Exception $e) {
+            WP_CLI::error("$path 처리 중 에러: " . $e->getMessage());
+        }
+
+        WP_CLI::success('모두 성공적으로 가져왔습니다.');
+    }
+
+    /**
      * 입력 JLPT 레벨별 한자 목록의 중복을 제거합니다.
      *
      * 인터넷에서 수집한 한자 목록에는 중복이 있을 수 있습니다.
@@ -439,7 +494,7 @@ class CliCommand
      *
      * ## EXAMPLES
      *
-     *     wp hnkp jmdict-import jmdict_e.xml
+     *     wp hnkp import-jmdict jmdict_e.xml
      *
      * ## OPTIONS
      *

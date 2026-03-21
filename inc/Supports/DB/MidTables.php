@@ -19,12 +19,13 @@ class MidTables extends Tables implements Support
     private static function getSingleTableName(string $table): string
     {
         return match ($table) {
-            'hanja' => self::getTableHanja(),
-            'jlpt'  => self::getTableJlpt(),
-            'kanji' => self::getTableKanji(),
-            'map'   => self::getTableMap(),
-            'sinji' => self::getTableSinji(),
-            default => '',
+            'hanja'   => self::getTableHanja(),
+            'jlpt'    => self::getTableJlpt(),
+            'kanji'   => self::getTableKanji(),
+            'map'     => self::getTableMap(),
+            'sinji'   => self::getTableSinji(),
+            'jyouyou' => self::getTableJyouyou(),
+            default   => '',
         };
     }
 
@@ -60,6 +61,11 @@ class MidTables extends Tables implements Support
         return self::getPrefix() . 'sinji';
     }
 
+    public static function getTableJyouyou(): string
+    {
+        return self::getPrefix() . 'jyouyou';
+    }
+
     public static function truncateSingleTable(string $table): void
     {
         global $wpdb;
@@ -78,6 +84,7 @@ class MidTables extends Tables implements Support
             self::getTableKanji(),
             self::getTableMap(),
             self::getTableSinji(),
+            self::getTableJyouyou(),
         ];
     }
 }

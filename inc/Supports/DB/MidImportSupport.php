@@ -161,7 +161,7 @@ class MidImportSupport implements Support
                 '특급'  => 'sa',
                 '특급Ⅱ' => 'sb',
             };
-            $hanja      = trim($data[2]);
+            $hanja      = Utils::normalize(trim($data[2]));
             $meaning    = trim($data[3]);
 
             $rows[] = $wpdb->prepare(
@@ -243,7 +243,7 @@ class MidImportSupport implements Support
             [$k_in, $type, $k_out] = $this->parseUnihanVariantLine($line);
 
             foreach ($k_out as $ko) {
-                $key = "$k_in-$ko-$type";
+                $key     = "$k_in-$ko-$type";
                 $isSinji =
                     ('tv' === $type && isset($rCached[$k_in])) ||
                     ('sev' === $type && isset($rCached[$k_in])) ||
@@ -341,6 +341,57 @@ class MidImportSupport implements Support
         fclose($fp);
 
         $query = "INSERT INTO `$table` (`level`, `kanji`) VALUES " . implode(',', $rows);
+        $wpdb->query($query);
+        if ($wpdb->last_error) {
+            throw new Exception($wpdb->last_error);
+        }
+    }
+
+    /**
+     * 상용한자 목록을 임포트
+     *
+     * @param string $path
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function importJyouyou(string $path): void
+    {
+        global $wpdb;
+
+        $table = MidTables::getTableJyouyou();
+
+        if (!file_exists($path) || !is_readable($path)) {
+            throw new Exception("File not found, or unreadable: $path");
+        }
+
+        $fp = fopen($path, 'r');
+        if (!$fp) {
+            throw new Exception("Failed to open file: $path");
+        }
+
+        $rows = [];
+
+        // 첫 줄 버림
+        fgetcsv($fp, 1000, ',', '"', '\\');
+
+        while (false !== ($data = fgetcsv($fp, 1000, ',', '"', '\\'))) {
+            $data    = array_map(fn($d) => trim($d), $data);
+            $seq     = $data[0];
+            $kanji   = Utils::normalize($data[1]);
+            $kyuuji  = $data[2] ? Utils::normalize($data[2]) : null;
+            $gakunen = $data[3];
+
+            if ($kyuuji) {
+                $rows[] = $wpdb->prepare('(%d,%s,%s,%d)', $seq, $kanji, $kyuuji, $gakunen);
+            } else {
+                $rows[] = $wpdb->prepare('(%d,%s,NULL,%s)', $seq, $kanji, $gakunen);
+            }
+        }
+
+        fclose($fp);
+
+        $query = "INSERT INTO `$table` (`id`, `kanji`, `kyuuji`, `gakunen`) VALUES " . implode(',', $rows);
         $wpdb->query($query);
         if ($wpdb->last_error) {
             throw new Exception($wpdb->last_error);
