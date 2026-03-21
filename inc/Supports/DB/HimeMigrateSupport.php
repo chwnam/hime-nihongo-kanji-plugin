@@ -53,12 +53,13 @@ class HimeMigrateSupport implements Support
             "    MAX(h.level) AS ko_level\n" .
             "FROM `$tableKanji` k\n" .
             "LEFT JOIN `$tableJlpt` j ON j.kanji = k.kanji\n" .
-            "LEFT JOIN `$tableMap` m1 ON m1.k_in = k.kanji AND m1.type IN ('t', 'z')\n" .
-            "LEFT JOIN `$tableMap` m2 ON m2.k_out = k.kanji AND m2.type = 's'\n" .
+            "LEFT JOIN `$tableMap` m1 ON m1.k_in = k.kanji AND m1.type IN ('tv', 'sev', 'z')\n" .
+            "LEFT JOIN `$tableMap` m2 ON m2.k_out = k.kanji AND m2.type = 'siv'\n" .
             "LEFT JOIN `$tableSinji` s1 ON s1.kanji = m1.k_out\n" .
             "LEFT JOIN `$tableSinji` s2 ON s2.kanji = m2.k_out\n" .
             "LEFT JOIN `$tableHanja` h ON h.hanja = (IF(k.kanji = h.hanja, k.kanji, COALESCE(m1.k_out, m2.k_in)))\n" .
             "GROUP BY k.kanji ORDER BY k.id";
+        // echo $query;
         $wpdb->query($query);
         if ($wpdb->last_error) {
             throw new Exception($wpdb->last_error);

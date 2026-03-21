@@ -144,7 +144,7 @@ return [
             'field'         => [
                 "k_in char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL",
                 "k_out char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL",
-                "type enum('t', 's', 'z') NOT NULL COMMENT 't는 kTraditionalVariant (신자를 구자로 매핑), s는 kSimplifiedVariant (구자를 신자로 매핑), z는 자형만 약간 다른 동일한 글자(Typeface/Glyph variant).'",
+                "type enum('tv', 'siv', 'sev', 'zv') NOT NULL COMMENT 'tv=kTraditionalVariant/siv=kSimplifiedVariant/sev=kSemanticVariant/zv=kZVariant'",
             ],
             'index'         => [
                 'KEY idx_in_type (k_in, type)',

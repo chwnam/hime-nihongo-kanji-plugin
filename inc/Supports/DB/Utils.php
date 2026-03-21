@@ -14,7 +14,7 @@ class Utils implements Support
 
     public static function unicodeToStr(string $unicode): string
     {
-        if (preg_match('/^U\+([0-9A-F]{4,6})$/i', $unicode, $matches)) {
+        if (preg_match('/^U\+([0-9A-F]{4,6})/i', $unicode, $matches)) {
             return mb_chr(hexdec($matches[1]), 'UTF-8');
         }
 

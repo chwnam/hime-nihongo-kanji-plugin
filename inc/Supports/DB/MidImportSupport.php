@@ -240,24 +240,19 @@ class MidImportSupport implements Support
                 continue;
             }
 
-            $cols    = array_map('trim', preg_split("/\s+/", $line));
-            $k_in    = Utils::normalize(Utils::unicodeToStr($cols[0]));
-            $k_out   = Utils::normalize(Utils::unicodeToStr($cols[2]));
-            $type    = match ($cols[1]) {
-                'kTraditionalVariant' => 't', // 신자를 구자로 매핑
-                'kSimplifiedVariant'  => 's', // 구자를 신자로 매핑
-                'kZVariant'           => 'z', // 자형만 약간 다른 동일한 글자
-                default               => '',
-            };
-            $key     = "$k_in-$k_out-$type";
-            $isSinji =
-                ('t' === $type && isset($rCached[$k_in])) ||
-                ('s' === $type && isset($rCached[$k_out])) ||
-                ('z' === $type && isset($rCached[$k_in]));
+            [$k_in, $type, $k_out] = $this->parseUnihanVariantLine($line);
 
-            if ($isSinji && !isset($vCached[$key])) {
-                $variantsRows[] = $wpdb->prepare('(%s,%s,%s)', $k_in, $k_out, $type);
-                $vCached[$key]  = true;
+            foreach ($k_out as $ko) {
+                $key = "$k_in-$ko-$type";
+                $isSinji =
+                    ('tv' === $type && isset($rCached[$k_in])) ||
+                    ('sev' === $type && isset($rCached[$k_in])) ||
+                    ('siv' === $type && isset($rCached[$ko])) ||
+                    ('zv' === $type && isset($rCached[$k_in]));
+                if ($isSinji && !isset($vCached[$key])) {
+                    $variantsRows[] = $wpdb->prepare('(%s,%s,%s)', $k_in, $ko, $type);
+                    $vCached[$key]  = true;
+                }
             }
         }
         fclose($fp);
@@ -271,6 +266,22 @@ class MidImportSupport implements Support
         if ($wpdb->last_error) {
             throw new Exception($wpdb->last_error);
         }
+    }
+
+    public function parseUnihanVariantLine(string $line): array
+    {
+        $cols  = array_map('trim', preg_split("/\s+/", $line));
+        $k_in  = Utils::normalize(Utils::unicodeToStr(array_shift($cols)));
+        $type  = match (array_shift($cols)) {
+            'kTraditionalVariant' => 'tv',  // 신자를 구자로 매핑
+            'kSimplifiedVariant'  => 'siv', // 구자를 신자로 매핑
+            'kSemanticVariant'    => 'sev', //
+            'kZVariant'           => 'zv',  // 자형만 약간 다른 동일한 글자
+            default               => '',
+        };
+        $k_out = array_map(fn($col) => Utils::normalize(Utils::unicodeToStr($col)), $cols);
+
+        return [$k_in, $type, $k_out];
     }
 
     /**
