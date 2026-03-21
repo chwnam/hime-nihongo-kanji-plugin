@@ -86,3 +86,18 @@ HAVING cnt > 1
 4. `data/kasumi_typos`에 있지 않다면 사전에서 찾은 단어이므로 hime_word에 삽입합니다.
 5. kasumi_words 테이블과 hime_words의 단어 매핑 테이블을 기록합니다.
 6. 매핑 테이블을 이용해 쓰기 내용을 마이그레이션합니다.
+
+`data\kasumi_correct.csv`에 교정한 내용을 담았습니다.
+각 필드의 의미는 아래와 같습니다.
+
+- jlpt: jlpt 급수, n3.csv, n4.csv, n5.csv 파일에 속해 있는지를 구분합니다.
+- entry: 해당 파일 내에서 나오는 순번입니다.
+- word: 해당 PDF에 담긴 한자
+- yomikata: PDF에서 추출한 읽기
+- meaning: PDF에서 추출한 뜻
+- in_jmdict: JMDict에서 word를 찾을 수 있었는지를 나타냅니다.
+- is_correct: word, yomikata를 판단하여 결국 맞는 단어인지 아닌지를 판별한 결과를 기록합니다.
+- remarks: 판정의 이유를 기록합니다.
+- correct_word: 결국 올바른 단어를 기록합니다.
+- correct_yomikata_1: 올바른 요미카타를 기록합니다.
+- correct_yomikata_2: 읽는 법이 2개인 경우 분리하여 적었습니다. 여기에도 요미카타가 있다면 해당 단어는 2개로 나누어 기록해야 합니다.
