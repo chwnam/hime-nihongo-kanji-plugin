@@ -35,7 +35,7 @@ return [
             'table_name'    => "{$wpdb->prefix}hnkp_kasumi_chars",
             'table_comment' =>
                 '카스미 한자 교실 N3, N4, N5 한자 테이블. ' .
-                'N5부터 N4, N3 순으로 입력. 아카이빙 목적이며, 부정화한 자료 포함 가능성 있음',
+                'N5부터 N4, N3 순으로 입력. 아카이빙 목적이며, 부정확한 자료 포함 가능성 있음',
             'field'         => [
                 "id int(10) unsigned NOT NULL AUTO_INCREMENT",
                 "entry int(10) unsigned NOT NULL COMMENT '해당 레벨에서 등록된 엔트리 번호'",
