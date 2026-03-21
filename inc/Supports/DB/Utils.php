@@ -20,4 +20,9 @@ class Utils implements Support
 
         return '';
     }
+
+    public static function strToHex(string $str): string
+    {
+        return strtoupper(bin2hex($str));
+    }
 }
