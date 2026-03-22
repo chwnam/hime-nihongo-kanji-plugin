@@ -250,22 +250,75 @@ class HimeMigrateSupport implements Support
     {
         global $wpdb;
 
-        // kasumi_chars의 모든 한자는 hime_chars에서 찾을 수가 있습니다.
-        // 그러므로 chars에서 중복되지 않게 hime_chars.id 만 추출하는 것을 목표로 합니다.
+        $table  = HimeTables::getTableWords();
+        $cached = [];
+        $rows   = [];
 
-        // kasumi_words에는 오류가 있을 가능성이 높습니다.
-        // 우선 히메 테이블로 모든 단어를 중복 없이 복제합니다.
-        $kasumiWords = KasumiTables::getTableWords();
-        $himeWords   = HimeTables::getTableWords();
-
-        $query = "INSERT IGNORE INTO `$himeWords` (word, yomikata, meaning) SELECT word, yomikata, meaning FROM `$kasumiWords`";
-        $wpdb->query($query);
-        if ($wpdb->last_error) {
-            throw new Exception($wpdb->last_error);
+        // kasumi_corrected.csv 파일을 읽어 먼저 이 데이터를 삽입한다.
+        $path = dirname(HNKP_MAIN) . '/data/kasumi_corrected.csv';
+        $fp   = fopen($path, 'r');
+        if (!$fp) {
+            throw new Exception("Failed to open file: $path");
         }
 
-        // hime_words 단어와 읽는 법을 기준으로
-        // jmdict 단어에 등재된 사항이 있는지 검사하고
-        // jmdict에서 발견할 수 없는 경우라면 교열 대상이 되므로 로그로 표시합니다.
+        // 헤더
+        fgetcsv($fp, 1000, ',', '"', '\\');
+        // 교정 파일 삽입 후, 매핑 생성
+        while (false !== ($row = fgetcsv($fp, 1000, ',', '"', '\\'))) {
+            $row = array_map(fn($d) => trim($d), $row);
+
+            $jlpt    = $row[0];
+            $entry   = $row[1];
+            $word0   = $row[2];
+            $yomi0   = $row[3];
+            $meaning = $row[4];
+            $word1   = $row[8];
+            $yomi1   = $row[9];
+            $yomi2   = $row[10];
+
+            $id1 = null;
+            if ($yomi1) {
+                $query = $wpdb->prepare("SELECT id FROM ``$table`` WHERE word=%s AND yomikata=%s", $word1, $yomi1);
+                $id1   = $wpdb->get_var($query);
+                if (!$id1) {
+                    $wpdb->query(
+                        $wpdb->prepare(
+                            "INSERT INTO $table (word, yomikata, meaning) VALUE (%s, %s, %s)",
+                            $word1, $yomi1, $meaning,
+                        ),
+                    );
+                    $id1 = $wpdb->insert_id;
+                }
+            }
+
+            $id2 = null;
+            if ($yomi2) {
+                $query = $wpdb->prepare("SELECT id FROM ``$table`` WHERE word=%s AND yomikata=%s", $word1, $yomi1);
+                $id2   = $wpdb->get_var($query);
+                if (!$id2) {
+                    $wpdb->query(
+                        $wpdb->prepare(
+                            "INSERT INTO $table (word, yomikata, meaning) VALUE (%s, %s, %s)",
+                            $word1, $yomi2, $meaning,
+                        ),
+                    );
+                    $id2 = $wpdb->insert_id;
+                }
+            }
+
+            if ($id1) {
+                $cached["$jlpt/$entry/$word0/$yomi0"] = $id1;
+                $cached["$jlpt/$entry/$word1/$yomi1"] = $id1;
+            }
+            if ($id2) {
+                $cached["$jlpt/$entry/$word1/$yomi1"] = $id2;
+            }
+        }
+
+        fclose($fp);
+
+        // n3, n4, n5 csv 파일 순회 루프하면서
+        // 모든 나머지 단어를 읽어 테이블에 넣는다.
+        //
     }
 }

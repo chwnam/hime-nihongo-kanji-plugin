@@ -9,6 +9,7 @@ HANJA_CSV="/path/to/hanja.csv"
 UNIHAN_READINGS="/path/to/Unihan_Readings.txt"
 UNIHAN_VARIANTS="/path/to/Unihan_Variants.txt"
 JLPT_KANJI="/path/to/jlpt_kanji.txt"
+JYOUYOUKANJI="/path/to/data/jyouyoukanji.csv"
 
 JMDICT_E_XML="/path/to/JMdict_e.xml"
 
@@ -24,9 +25,11 @@ $WP_CLI hnkp import-kanjidic2 "$KANJIDIC2_XML" --yes
 $WP_CLI hnkp import-hanja "$HANJA_CSV" --yes
 $WP_CLI hnkp import-unihan "$UNIHAN_READINGS" "$UNIHAN_VARIANTS" --yes
 $WP_CLI hnkp import-jlpt "$JLPT_KANJI" --yes
+$WP_CLI hnkp import-jyouyou "$JYOUYOUKANJI" --yes
 
 # Do JMDict import, this takes long.
 $WP_CLI hnkp import-jmdict "$JMDICT_E_XML" --yes
 
 # Do hime migration
 $WP_CLI hnkp migrate-hime --yes
+$WP_CLI hnkp migrate-kasumi-to-hime --yes
