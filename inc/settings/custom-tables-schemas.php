@@ -349,9 +349,12 @@ return [
             'field'         => [
                 "char_id int(10) unsigned NOT NULL COMMENT '한자 테이블의 ID.'",
                 "word_id int(10) unsigned NOT NULL COMMENT '단어 테이블의 ID.'",
+                "pos tinyint(1) unsigned NOT NULL COMMENT '한자가 발견된 위치'",
             ],
             'index'         => [
-                'KEY idx_char_word (char_id, word_id)',
+                'PRIMARY KEY  (char_id, word_id, pos)',
+                'KEY idx_char_pos (char_id, pos)',
+                'KEY idx_word_pos (word_id, pos)',
             ],
             'engine'        => 'InnoDB',
             'charset'       => '',

@@ -643,9 +643,15 @@ class CliCommand
      *
      * ## EXAMPLES
      *
-     *     wp hnkp migrate-kasumi-to-hime
+     *     wp hnkp migrate-kasumi-to-hime n5.csv n4.csv n3.csv
      *
      * ## OPTIONS
+     *
+     * <paths>...
+     * : n3.csv, n4.csv, n5.csv 파일의 경로
+     *
+     * [--correction_csv=<correction_csv>]
+     * : 오타 수정한 내욕을 정리한 CSV 파일. 생략하면 견본인 data/kasumi_corrected.csv 사용
      *
      * [--truncate]
      * : hime_words, hime_char_word_rels 테이블을 truncate 합니다,
@@ -673,6 +679,8 @@ class CliCommand
                 ),
                 $assoc_args,
             );
+            HimeTables::truncateSingleTable('words');
+            HimeTables::truncateSingleTable('char_word_rels');
         } else {
             WP_CLI::confirm(
                 sprintf(
@@ -684,9 +692,13 @@ class CliCommand
         }
 
         try {
+            $correction = $assoc_args['correction_csv'] ?? dirname(HNKP_MAIN) . '/data/kasumi_corrected.csv';
+            $paths      = $args;
+
             /** @var HimeMigrateSupport $support */
             $support = hnkp_get(HimeMigrateSupport::class);
-            $support->migrateKasumiToHime();
+            $support->migrateKasumiToHime($correction, $paths);
+            $support->calcCharWordRels();
         } catch (Exception $e) {
             WP_CLI::error($e->getMessage());
         }

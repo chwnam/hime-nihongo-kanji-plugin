@@ -246,79 +246,300 @@ class HimeMigrateSupport implements Support
      * @throws Exception
      * @used-by CliCommand::migrateKasumiToHime()
      */
-    public function migrateKasumiToHime(): void
+    public function migrateKasumiToHime(string $correctionCsvPath, array $kasumiPaths): void
     {
         global $wpdb;
 
-        $table  = HimeTables::getTableWords();
-        $cached = [];
-        $rows   = [];
+        $table = HimeTables::getTableWords();
 
         // kasumi_corrected.csv 파일을 읽어 먼저 이 데이터를 삽입한다.
-        $path = dirname(HNKP_MAIN) . '/data/kasumi_corrected.csv';
-        $fp   = fopen($path, 'r');
+        $fp = fopen($correctionCsvPath, 'r');
         if (!$fp) {
-            throw new Exception("Failed to open file: $path");
+            throw new Exception("Failed to open file: $correctionCsvPath");
         }
 
-        // 헤더
+        $correctionRows = [];
+        // 헤더 버림
         fgetcsv($fp, 1000, ',', '"', '\\');
-        // 교정 파일 삽입 후, 매핑 생성
+        // 우선 모든 행 수집하고 시작
         while (false !== ($row = fgetcsv($fp, 1000, ',', '"', '\\'))) {
-            $row = array_map(fn($d) => trim($d), $row);
+            $correctionRows[] = array_map(fn($d) => trim($d), $row);
+        }
+        fclose($fp);
 
-            $jlpt    = $row[0];
-            $entry   = $row[1];
-            $word0   = $row[2];
-            $yomi0   = $row[3];
-            $meaning = $row[4];
-            $word1   = $row[8];
-            $yomi1   = $row[9];
-            $yomi2   = $row[10];
-
-            $id1 = null;
-            if ($yomi1) {
-                $query = $wpdb->prepare("SELECT id FROM ``$table`` WHERE word=%s AND yomikata=%s", $word1, $yomi1);
-                $id1   = $wpdb->get_var($query);
-                if (!$id1) {
-                    $wpdb->query(
-                        $wpdb->prepare(
-                            "INSERT INTO $table (word, yomikata, meaning) VALUE (%s, %s, %s)",
-                            $word1, $yomi1, $meaning,
-                        ),
-                    );
-                    $id1 = $wpdb->insert_id;
-                }
-            }
-
-            $id2 = null;
-            if ($yomi2) {
-                $query = $wpdb->prepare("SELECT id FROM ``$table`` WHERE word=%s AND yomikata=%s", $word1, $yomi1);
-                $id2   = $wpdb->get_var($query);
-                if (!$id2) {
-                    $wpdb->query(
-                        $wpdb->prepare(
-                            "INSERT INTO $table (word, yomikata, meaning) VALUE (%s, %s, %s)",
-                            $word1, $yomi2, $meaning,
-                        ),
-                    );
-                    $id2 = $wpdb->insert_id;
-                }
-            }
-
-            if ($id1) {
-                $cached["$jlpt/$entry/$word0/$yomi0"] = $id1;
-                $cached["$jlpt/$entry/$word1/$yomi1"] = $id1;
-            }
-            if ($id2) {
-                $cached["$jlpt/$entry/$word1/$yomi1"] = $id2;
+        // 강제 인서트
+        $values = [];
+        foreach ($correctionRows as $row) {
+            // corrected word, yomikata
+            $values[] = $wpdb->prepare('(%s,%s,%s)', $row[8], $row[9], $row[4]);
+            if ($row[10]) {
+                $values[] = $wpdb->prepare('(%s,%s,%s)', $row[8], $row[10], $row[4]);
             }
         }
+        if ($values) {
+            $wpdb->query(
+                "INSERT IGNORE INTO `$table` (word, yomikata, meaning) VALUES " . implode(',', $values),
+            );
+        }
 
-        fclose($fp);
+        // 수정된 내역에 대해 잘못된 항목이 들어가지 않도록 방어하는 장치 구축
+        $guard = [];
+        foreach ($correctionRows as $idx => $row) {
+            $jlpt        = $row[0];
+            $entry       = $row[1];
+            $word0       = $row[2];
+            $yomi0       = $row[3];
+            $key         = "$jlpt@$entry@$word0@$yomi0";
+            $guard[$key] = $idx;
+        }
 
         // n3, n4, n5 csv 파일 순회 루프하면서
         // 모든 나머지 단어를 읽어 테이블에 넣는다.
-        //
+        $kasumiRows = [];
+
+        foreach ($kasumiPaths as $path) {
+            if (!preg_match('/^n(\d)\.csv$/i', basename($path), $matches)) {
+                throw new Exception('급수 정보는 파일 이름에서 추출합니다. 파일 이름 형식을 맞춰 주세요.');
+            }
+
+            $jlpt = (int)$matches[1]; // JLPT level
+
+            $kasumiRows[$jlpt] = [];
+
+            $fp = fopen($path, 'r');
+            while (($row = fgetcsv($fp, 1000, ',', '"', '\\')) !== false) {
+                $kasumiRows[$jlpt][] = array_map('trim', $row);
+            }
+            fclose($fp);
+
+            $lastEntry = -1;
+            foreach ($kasumiRows[$jlpt] as $row) {
+                $entry = (int)$row[0];
+
+                if ($entry > $lastEntry) {
+                    // 새 한자 - 한자 입력
+                    $lastEntry = $entry;
+                } elseif ($entry === $lastEntry) {
+                    // 한자의 용례
+                    $word    = $row[1];
+                    $yomi    = $row[2];
+                    $meaning = $row[3];
+
+                    $key = "$jlpt@$entry@$word@$yomi";
+                    if (isset($guard[$key])) {
+                        continue;
+                    }
+
+                    $query = $wpdb->prepare(
+                        "INSERT IGNORE INTO `$table` " .
+                        "(word, yomikata, meaning) VALUE " .
+                        "('%s', '%s', '%s')",
+                        $word,
+                        $yomi,
+                        $meaning,
+                    );
+
+                    $wpdb->query($query);
+                    if ($wpdb->last_error) {
+                        throw new Exception('에러: ' . $wpdb->last_error);
+                    }
+                }
+            }
+        }
+
+        $kasumiMap = [
+            'chars' => [
+                // [
+                //     'jlpt'     => 0,
+                //     'entry'    => 1,
+                //     'kanji'    => '',
+                //     'on_yomi'  => '',
+                //     'kun_yomi' => '',
+                //     'mapping'  => 0',
+                // ],
+            ],
+            'words' => [
+                // [
+                //     'jlpt'     => 0,
+                //     'entry'    => 1,
+                //     'word'     => '',
+                //     'yomikata' => '',
+                //     'meaning'  => '',
+                //     'mapping'  => [],
+                // ],
+            ],
+        ];
+
+        // 댜시 CSV 파일 루프를 돌면서, 완전한 매핑 테이블을 구한다.
+        $charsTable = HimeTables::getTableChars();
+        $wordsTable = HimeTables::getTableWords();
+
+        foreach ($kasumiRows as $jlpt => $rows) {
+            $lastEntry = -1;
+
+            foreach ($rows as $row) {
+                $entry = (int)$row[0];
+                if ($entry > $lastEntry) {
+                    $lastEntry = $entry;
+                    // 한자 파트
+                    $char = [
+                        'jlpt'     => $jlpt,
+                        'entry'    => (int)$row[0],
+                        'kanji'    => Utils::normalize($row[1]),
+                        'on_yomi'  => $row[2],
+                        'kun_yomi' => $row[3],
+                        'mapping'  => [],
+                    ];
+
+                    // 양이 적으므로 바로 찾아 바로 매핑한다
+                    $id = (int)$wpdb->get_var(
+                        $wpdb->prepare("SELECT id FROM `$charsTable` WHERE kanji=%s", $char['kanji']),
+                    );
+                    if (!$id) {
+                        throw new Exception("Failed to find kanji: {$char['kanji']}, LINE: " . __LINE__);
+                    }
+
+                    $char['mapping']      = $id;
+                    $kasumiMap['chars'][] = $char;
+                } elseif ($entry === $lastEntry) {
+                    // 용례 파트
+                    $entry   = (int)$row[0];
+                    $w       = Utils::normalize($row[1]);
+                    $yomi    = $row[2];
+                    $meaning = $row[3];
+
+                    $word = [
+                        'jlpt'     => $jlpt,
+                        'entry'    => $entry,
+                        'word'     => $w,
+                        'yomikata' => $yomi,
+                        'meaning'  => $meaning,
+                        'mapping'  => [],
+                    ];
+
+                    // 오타난 곳의 내역인지 확인하자
+                    $key = "$jlpt@$entry@$w@$yomi";
+
+                    if (array_key_exists($key, $guard)) {
+                        // $guard 매핑을 활용해 교정한 내역을 확인한다.
+                        $idx = $guard[$key]; // $correctionRows 인덱스
+
+                        $_word_arg = $correctionRows[$idx][8];
+                        $_yomi_arg = $correctionRows[$idx][9];
+
+                        $query = $wpdb->prepare(
+                            "SELECT id FROM `$wordsTable` WHERE word=%s AND yomikata=%s",
+                            $_word_arg,
+                            $_yomi_arg,
+                        );
+                        $id    = (int)$wpdb->get_var($query);
+                        if (!$id) {
+                            throw new Exception("Failed to find word: {$_word_arg}, LINE:" . __LINE__);
+                        }
+                        $word['mapping'][] = $id;
+
+                        // 중복 의미 검사
+                        if ($correctionRows[$idx][10]) {
+                            $query = $wpdb->prepare(
+                                "SELECT id FROM `$wordsTable` WHERE word=%s AND yomikata=%s",
+                                $_word_arg,
+                                $correctionRows[$idx][10],
+                            );
+                            $id    = (int)$wpdb->get_var($query);
+                            if (!$id) {
+                                throw new Exception("Failed to find word: {$_word_arg}, LINE:" . __LINE__);
+                            }
+                            $word['mapping'][] = $id;
+                        }
+                    } else {
+                        $_word_arg = Utils::normalize($row[1]);
+                        $_yomi_arg = $row[2];
+
+                        $query = $wpdb->prepare(
+                            "SELECT id FROM `$wordsTable` WHERE word=%s AND yomikata=%s",
+                            $_word_arg,
+                            $_yomi_arg,
+                        );
+                        $id    = (int)$wpdb->get_var($query);
+                        if (!$id) {
+                            throw new Exception("Failed to find word: {$_word_arg}, LINE:" . __LINE__);
+                        }
+                        $word['mapping'][] = $id;
+                    }
+                    $kasumiMap['words'][] = $word;
+                }
+            } // end foreach ($rows as $row)
+        } // end foreach ($kasumiRows as $jlpt => $rows)
+
+        // 카스미 맵이 구해졌다. 우선 표준출력.
+        echo json_encode($kasumiMap, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        echo PHP_EOL;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function calcCharWordRels(): void
+    {
+        global $wpdb;
+
+        $charsTable = HimeTables::getTableChars();
+        $wordsTable = HimeTables::getTableWords();
+        $relsTable  = HimeTables::getTableCharWordRels();
+
+        // 단어에 사용된 모든 한자 구하기
+        $chars   = [];
+        $results = $wpdb->get_results("SELECT id, word FROM `$wordsTable`");
+        foreach ($results as $row) {
+            $word      = $row->word;
+            $wordChars = mb_str_split($word, 1, 'UTF-8');
+
+            foreach ($wordChars as $c) {
+                if (Utils::isKanji($c) && !isset($chars[$c])) {
+                    $chars[$c] = true;
+                }
+            }
+        }
+
+        if (!$chars) {
+            throw new Exception('No kanji found.');
+        }
+
+        // 한자 룩업 테이블
+        $kanjiLookup = [];
+        $holder      = implode(',', array_fill(0, count($chars), '%s'));
+        $mapResult   = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT kanji, id FROM `$charsTable` WHERE kanji IN ($holder)",
+                array_keys($chars),
+            ),
+        );
+        foreach ($mapResult as $row) {
+            $kanji               = $row->kanji;
+            $id                  = $row->id;
+            $kanjiLookup[$kanji] = $id;
+        }
+
+        // 다시 단어의 글자를 조회하며 관계 조사
+        $rels = [];
+        foreach ($results as $result) {
+            $wordId = $result->id;
+            $chars  = mb_str_split($result->word, 1, 'UTF-8');
+            foreach ($chars as $pos => $char) {
+                if (isset($kanjiLookup[$char])) {
+                    $charId = $kanjiLookup[$char];
+                    $rels[] = $wpdb->prepare('(%d,%d,%d)', $charId, $wordId, $pos);
+                }
+            }
+        }
+
+        if (!$rels) {
+            throw new Exception('No rels found.');
+        }
+
+        $wpdb->query("INSERT IGNORE INTO `$relsTable` (char_id, word_id, pos) VALUES " . implode(',', $rels));
+        if ($wpdb->last_error) {
+            throw new Exception($wpdb->last_error);
+        }
     }
 }

@@ -25,4 +25,9 @@ class Utils implements Support
     {
         return strtoupper(bin2hex($str));
     }
+
+    public static function isKanji(string $str): bool
+    {
+        return preg_match('/^\p{Han}$/u', $str);
+    }
 }
